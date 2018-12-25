@@ -1,11 +1,10 @@
 <template>
   <div class="Home">
-    <div class="row" v-for="row in board">
-       <!-- {{ row }} foo -->
-      <div class="tile" v-for="pokemon in row">
-        <img :src="pokemon" :class="pokemon"/>
-      </div>
+    <center>
+     <div id="board" class="board">
+       <!-- rows and columns -->
     </div>
+  </center>
   </div>
 </template>
 
@@ -40,7 +39,8 @@ export default {
         'https://i.imgur.com/gmfT5zb.png'
       ],
       deck: [],
-      board: [[],[],[],[],[],[],[],[],[],[]],
+      board: [[],[],[],[],[],[],[],[],[]],
+      currPair:[],
     }
   },
 
@@ -54,16 +54,37 @@ export default {
     },
 
     buildBoard: function() {
+      let self = this;
+      /* Done programmatically instead of a v-for to give me ids to grab to figure out what's being switched */
       for(var i=0; i < this.board.length; i++) { // into outer array
+        let board = document.getElementById("board")
+        let row = document.createElement("div")
+        row.classList.add("row")
+        row.id = i;
+        board.appendChild(row)
+
         for(var j=0; j < 9; j++) {    // populate inner array
-          this.board[i][j] = this.deck[Math.floor(Math.random() * this.deck.length)]
+          let tile = document.createElement("div");
+          let img = document.createElement("img")
+          img.src = this.deck[Math.floor(Math.random() * this.deck.length)]
+          tile.classList.add("tile");
+          tile.addEventListener("click", function() { self.moveTiles(tile) })
+          tile.id = `${i}-${j}`;
+          tile.appendChild(img);
+          row.appendChild(tile);
         }
       }
+
+      this.checkMatches();
+    },
+
+    moveTiles: function(tile) {
+      console.log(tile)
     },
 
     checkMatches: function() {
       // measure the stuff around the
-    }
+    },
   },
 
   computed: {
@@ -110,6 +131,10 @@ img {
   /* background-color:red; */
   justify-content:space-around;
   vertical-align:center;
+}
+
+.tile:hover {
+  border:1px solid #9aa5b7;
 }
 </style>
 <!-- Add "scoped" attribute to limit CSS to this component only -->

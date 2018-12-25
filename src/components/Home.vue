@@ -1,6 +1,7 @@
 <template>
   <div class="Home">
     <center>
+      <h1> Pokemon Crush</h1>
      <div id="board" class="board">
        <!-- rows and columns -->
     </div>
@@ -40,7 +41,7 @@ export default {
       ],
       deck: [],
       board: [[],[],[],[],[],[],[],[],[]],
-      currPair:[],
+      pair:[],
     }
   },
 
@@ -79,17 +80,35 @@ export default {
     },
 
     moveTiles: function(tile) {
-      console.log(tile)
+      if(this.currPair.length < 2) {
+        this.pair.push(tile)
+      }
+
+      if(this.currPair.length === 2) {
+        let aSrc = document.getElementById(this.currPair[0].id).firstChild.src;
+        let bSrc = document.getElementById(this.currPair[1].id).firstChild.src;
+        document.getElementById(this.currPair[0].id).firstChild.src = bSrc;
+        document.getElementById(this.currPair[1].id).firstChild.src = aSrc;
+        let copyPair = Array.from(this.pair)
+        this.pair = []; // clears current selections
+        this.checkMatches(copyPair);
+      }
     },
 
-    checkMatches: function() {
-      // measure the stuff around the
+    checkMatches: function(pair) {
+      // hoping it makes sense to try to ONLY look locally before triggering a look at the whole board...
+
+
     },
   },
 
   computed: {
     currBoard: function() {
       return this.board
+    },
+
+    currPair: function() {
+      return this.pair
     }
   },
 
@@ -135,6 +154,11 @@ img {
 
 .tile:hover {
   border:1px solid #9aa5b7;
+}
+
+h1 {
+  font-family:'Pacifico', cursive;
+  color:#8942f4;
 }
 </style>
 <!-- Add "scoped" attribute to limit CSS to this component only -->

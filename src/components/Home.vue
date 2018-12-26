@@ -42,6 +42,7 @@ export default {
       deck: [],
       board: [[],[],[],[],[],[],[],[],[]],
       pair:[],
+      matched: [],
     }
   },
 

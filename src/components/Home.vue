@@ -47,10 +47,10 @@ export default {
   },
 
   methods: {
-    pickCards: function() {
+    pickCards: function() {                  // picks the sets of icons people will be matching
       while(this.deck.length < 8) {
         let curr = this.pokemon[Math.floor(Math.random() * this.pokemon.length)]
-        this.deck.indexOf(curr) === -1 ? this.deck.push(curr) : ''
+        this.deck.indexOf(curr) === -1 ? this.deck.push(curr) : '' // ensures 8 unique images
       }
       this.buildBoard();
     },
@@ -72,6 +72,7 @@ export default {
           tile.classList.add("tile");
           tile.addEventListener("click", function() { self.moveTiles(tile) })
           tile.id = `${i}-${j}`;
+          this.board[i].push(tile.id);
           tile.appendChild(img);
           row.appendChild(tile);
         }
@@ -80,26 +81,44 @@ export default {
       this.checkMatches();
     },
 
-    moveTiles: function(tile) {
-      if(this.currPair.length < 2) {
+    switchTileAttrs: function(pair) {
+      let aSrc = document.getElementById(this.pair[0].id).firstChild.src;
+      let bSrc = document.getElementById(this.pair[1].id).firstChild.src;
+      document.getElementById(this.pair[0].id).firstChild.src = bSrc;
+      document.getElementById(this.pair[1].id).firstChild.src = aSrc;
+      // switches images
+      let bId = document.getElementById(this.pair[0].id).id;
+      let aId = document.getElementById(this.pair[1].id).id;
+      document.getElementById(aId).id = bId;
+      document.getElementById(bId).id = aId;
+    },
+
+    moveTiles: async function(tile) {
+
+      if(this.pair.length < 2) {  // ensures we have two values before wasting time checking anything
         this.pair.push(tile)
       }
 
-      if(this.currPair.length === 2) {
-        let aSrc = document.getElementById(this.currPair[0].id).firstChild.src;
-        let bSrc = document.getElementById(this.currPair[1].id).firstChild.src;
-        document.getElementById(this.currPair[0].id).firstChild.src = bSrc;
-        document.getElementById(this.currPair[1].id).firstChild.src = aSrc;
-        let copyPair = Array.from(this.pair)
-        this.pair = []; // clears current selections
-        this.checkMatches(copyPair);
+      if(this.pair.length === 2) {
+        await this.switchTileAttrs(this.pair); // switches attributes first
+        this.checkMatches();
       }
     },
 
-    checkMatches: function(pair) {
-      // hoping it makes sense to try to ONLY look locally before triggering a look at the whole board...
+    checkMatches: function() {
+      for(let i=0; i < this.board.length; i++) {
+        for(let j=0; j < this.board[i].length; j++) {
+          console.log(document.getElementById(`${i}-${j}`));
 
 
+
+          // rows up, rows down
+
+          // tiles out, tiles back
+
+          // need it to only stop until there is no longer a match
+        }
+      }
     },
   },
 
@@ -107,10 +126,6 @@ export default {
     currBoard: function() {
       return this.board
     },
-
-    currPair: function() {
-      return this.pair
-    }
   },
 
   mounted () {
@@ -125,18 +140,24 @@ img {
 }
 
 #app {
-  display:flex;
+  /* display:flex; */
   justify-content:space-around;
 }
 
 .board {
   width:90%;
   display:block;
-  justify-content:space-between;
+  /* justify-content:space-between; */
 }
 
-.row {
-  display:inline-flex;
+div#board {
+  display:block;
+}
+
+div.row {
+  display:flex;
+  justify-content:space-around;
+  width:750px;
   /* background-color:green; */
 }
 

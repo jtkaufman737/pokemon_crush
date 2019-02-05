@@ -106,17 +106,16 @@ export default {
     },
 
     checkMatches: function() {
-      for(let i=0; i < this.board.length; i++) {
-        for(let j=0; j < this.board[i].length; j++) {
-          console.log(document.getElementById(`${i}-${j}`));
+      for(let i=0; i < this.board.length; i++) {              // goes over boards
+        for(let j=0; j < this.board[i].length; j++) {         // goes over tiles
+          this.matched.push(`${i}-${j}`); // starting point
+          let z=1;
+          console.log(`${i}-${j}`);
 
-
-
-          // rows up, rows down
-
-          // tiles out, tiles back
-
-          // need it to only stop until there is no longer a match
+          while(document.getElementById(`${i}-${j + z}`) && document.getElementById(`${i}-${j}`).firstChild.src === document.getElementById(`${i}-${j + z}`).firstChild.src) {
+            console.log(z + " matches on " + document.getElementById(`${i}-${j}`).firstChild.src + " image.");
+            z++;
+          }
         }
       }
     },

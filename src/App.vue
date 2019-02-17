@@ -3,3 +3,6 @@
     <router-view></router-view>
   </div>
 </template>
+<style>
+@import './assets/styles.scss';
+</style>

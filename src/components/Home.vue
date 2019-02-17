@@ -1,5 +1,6 @@
 <template>
   <div class="Home">
+    <Modal v-show="isModalVisible" @close="closeModal"></Modal>
     <center>
       <h1> Pokemon Crush</h1>
      <div id="board" class="board">
@@ -10,11 +11,15 @@
 </template>
 
 <script>
+import Modal from './Modal'
 export default {
   name: 'Home',
 
+  components: { Modal },
+
   data() {
     return {
+      isModalVisible: false,
       pokemon: [
         'https://i.imgur.com/Hz1WUjU.png',
         'https://i.imgur.com/GUxLD1W.png',
@@ -47,6 +52,17 @@ export default {
   },
 
   methods: {
+    closeModal: function() {
+      this.isModalVisible = false;
+      document.getElementsByClassName("modal")[0].classList.remove('is-active')
+    },
+
+    openModal: async function(msg, title) {
+      this.isModalVisible = true;
+      await this.$store.dispatch('ACT_ALERTS', { alerts: msg, alertTitle: title})
+      document.getElementsByClassName("modal")[0].classList.add('is-active')
+    },
+
     pickCards: function() {                  // picks the sets of icons people will be matching
       while(this.deck.length < 8) {
         let curr = this.pokemon[Math.floor(Math.random() * this.pokemon.length)]
@@ -65,7 +81,7 @@ export default {
         row.id = i;
         board.appendChild(row)
 
-        for(var j=0; j < 9; j++) {    // populate inner array
+        for(var j=0; j < 9; j++) {    // inner array
           let tile = document.createElement("div");
           let img = document.createElement("img")
           img.src = this.deck[Math.floor(Math.random() * this.deck.length)]
@@ -82,15 +98,24 @@ export default {
     },
 
     switchTileAttrs: function(pair) {
-      let aSrc = document.getElementById(this.pair[0].id).firstChild.src;
-      let bSrc = document.getElementById(this.pair[1].id).firstChild.src;
-      document.getElementById(this.pair[0].id).firstChild.src = bSrc;
-      document.getElementById(this.pair[1].id).firstChild.src = aSrc;
-      // switches images
-      let bId = document.getElementById(this.pair[0].id).id;
-      let aId = document.getElementById(this.pair[1].id).id;
-      document.getElementById(aId).id = bId;
-      document.getElementById(bId).id = aId;
+      let valid = false;
+      // commence ugly code. Its my side project I'll write ugly ternaries if I want to lol
+      parseInt(pair[0].id.split("-")[0]) + 1 == pair[1].id.split("-")[0] || pair[0].id.split("-")[0] - 1 == pair[1].id.split("-")[0] ? valid = true : '';
+      parseInt(pair[0].id.split("-")[1]) + 1 == pair[1].id.split("-")[1] || pair[0].id.split("-")[1] - 1 == pair[1].id.split("-")[1] ? valid = true : '';
+
+      if(valid) {
+        let aSrc = document.getElementById(this.pair[0].id).firstChild.src;
+        let bSrc = document.getElementById(this.pair[1].id).firstChild.src;
+        document.getElementById(this.pair[0].id).firstChild.src = bSrc;
+        document.getElementById(this.pair[1].id).firstChild.src = aSrc;
+        // switches images
+        let bId = document.getElementById(this.pair[0].id).id;
+        let aId = document.getElementById(this.pair[1].id).id;
+        document.getElementById(aId).id = bId;
+        document.getElementById(bId).id = aId;
+      } else {
+        // this.openModal("To make a match, please select adjacent tiles","Error");
+      }
     },
 
     moveTiles: async function(tile) {
@@ -122,6 +147,7 @@ export default {
   },
 
   computed: {
+    //...mapState([])
     currBoard: function() {
       return this.board
     },
